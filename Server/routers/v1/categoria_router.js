@@ -1,6 +1,7 @@
 const express = require('express');
 
-const { 
+const {
+    getId,
     listar,
     registrar,
     actualizar,
@@ -10,8 +11,9 @@ const {
 const router = express.Router();
 
 router.get('/categoria', listar);
-router.put('/categoria/:id', actualizar);
+router.get('/categoria/:id', getId);
 router.post('/categoria', registrar);
+router.put('/categoria/:id', actualizar);
 router.delete('/categoria/:id', borrar);
 
 module.exports = router;

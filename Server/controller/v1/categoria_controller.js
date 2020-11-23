@@ -1,59 +1,134 @@
-//Data
+//Importar modelo
+const Categoria = require('../../models/model_categoria');
 
-const data = [ 
-    {
-        categoriaId: 123,
-        nombre: "Ropa",
-        estado: true
-    },
-    {
-        categoriaId: 124,
-        nombre: "Zapatillas",
-        estado: true
-    }
-
-];
 
 //Listar categoria
 
-const listar = (req, res) =>{
+function listar(req, res) {
+    
 
-    res.json({
-        ok: true,
-        categorias:data
-    })
+
+    Categoria.find().exec( (err, data) => {
+
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                err
+            })
+        }
+
+        res.json({
+            ok: true,
+            categorias:data
+        });
+
+    });
 }
+
+//Listar por ID
+function getId(req, res){
+
+    let id = req.params.id;
+
+    Categoria.findById(id, (err, data) =>{
+
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                err: err.message
+            })
+        }
+        res.json({
+            ok: true,
+            categorias:data
+        });
+
+    });
+}
+
 
 //Resgistrar categoria
 
-const registrar = (req, res) =>{
+function registrar(req, res) {
 
-    res.json({
-        ok: true,
-        categorias:data[0]
-    })
+    let data = {
+        nombre: req.body.nombre,
+        clasificacion: req.body.clasificacion
+    }
+
+
+   let categoria = new Categoria(data);
+
+   categoria.save((err, data) =>{
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                err: err.message
+            })
+        }
+
+        res.json({
+            ok: true,
+            categorias:data
+        });
+   })
 }
 
 //Actualizar categoria
 
-const actualizar = (req, res) =>{
+function actualizar(req, res) {
 
-    res.json({
-        ok: true,
-        categorias:data[0]
+    let id = req.params.id;
+    let data = {
+        nombre: req.body.nombre,
+        clasificacion: req.body.clasificacion
+    }
+    
+    Categoria.findByIdAndUpdate(id, data, {new: true}, (err, data)=>{
+       
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                err: err.message
+            })
+        }
+
+        res.json({
+            ok: true,
+            categorias:data
+        })
+
     })
+   
 }
 
 //Borrar categoria
 
-const borrar = (req, res) =>{
+function borrar(req, res) {
 
-    res.json({
-        ok: true,
-        categorias:data[0]
+    let id = req.params.id;
+
+    Categoria.findByIdAndDelete(id,(err, data) =>{
+
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                err: err.message
+            })
+        }
+
+        res.json({
+            ok: true,
+            categorias:data
+        })
     })
+   
 }
+
+
+
 module.exports = {
+    getId,
     listar,
     registrar,
     actualizar,
