@@ -1,18 +1,16 @@
-//Data
+const ModelUsuario = require('../../models/model_usuario');
 
-const data = [ 
-    {
-        id: 123,
-        usuario: "admin",
-        role: "ROLE_ADMIN"
-    },
-    {
-        id: 124,
-        usuario: "logistica",
-        role: "ROLE_USER"
+//capturar errores
+function errorHnadler(err, next, data) {
+    if(err){
+        return next(err);
     }
-
-];
+    if(!data){
+        const err = new Error('No existe');
+        err.statusCode = 500;
+        return next(err);
+    }
+}
 
 //Listar usuario
 
@@ -24,14 +22,35 @@ const listar = (req, res) =>{
     })
 }
 
-//Resgistrar usuario
+//listar usuarioId
 
-const registrar = (req, res) =>{
+const getUsuarioId = async (req, res) =>{
+
+    let usuarioId = req.params.id;
+
+    modelUsuario = await ModelUsuario.findById(usuarioId).exec();
 
     res.json({
-        ok: true,
-        usuarios:data[0]
+        result: true,
+        usuario: modelUsuario
     })
+
+}
+
+//Resgistrar usuario
+
+const registrar = (req, res, next) =>{
+
+   let modelUsuario = new ModelUsuario(req.body);
+
+   modelUsuario.save((err, data) =>{
+       if(err || !data) return errorHnadler(err, next, data);
+
+       res.json({
+           result: true,
+           usuario: data
+       })
+   })
 }
 
 //Actualizar usuario
@@ -57,5 +76,6 @@ module.exports = {
     listar,
     registrar,
     actualizar,
-    borrar
+    borrar,
+    getUsuarioId
 }

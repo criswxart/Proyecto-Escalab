@@ -1,21 +1,28 @@
 //Importar modelo
 const Categoria = require('../../models/model_categoria');
 
+//capturador de errores
+
+function errorHnadler(err, next, data) {
+    if(err){
+        return next(err);
+    }
+    if(!data){
+        const err = new Error('No existe');
+        err.statusCode = 500;
+        return next(err);
+    }
+}
+
 
 //Listar categoria
 
-function listar(req, res) {
+const listar = (req, res) =>{
     
-
-
     Categoria.find().exec( (err, data) => {
 
-        if(err){
-            return res.status(500).json({
-                ok: false,
-                err
-            })
-        }
+        if(err || !data) return errorHnadler(err, next, data);
+         
 
         res.json({
             ok: true,
@@ -26,18 +33,15 @@ function listar(req, res) {
 }
 
 //Listar por ID
-function getId(req, res){
+const getId = (req, res, next) =>{
 
     let id = req.params.id;
 
     Categoria.findById(id, (err, data) =>{
 
-        if(err){
-            return res.status(500).json({
-                ok: false,
-                err: err.message
-            })
-        }
+        if(err || !data) return errorHnadler(err, next, data);
+         
+        
         res.json({
             ok: true,
             categorias:data
@@ -49,7 +53,7 @@ function getId(req, res){
 
 //Resgistrar categoria
 
-function registrar(req, res) {
+const registrar = (req, res, next) => {
 
     let data = {
         nombre: req.body.nombre,
@@ -60,12 +64,7 @@ function registrar(req, res) {
    let categoria = new Categoria(data);
 
    categoria.save((err, data) =>{
-        if(err){
-            return res.status(500).json({
-                ok: false,
-                err: err.message
-            })
-        }
+    if(err || !data) return errorHnadler(err, next, data);
 
         res.json({
             ok: true,
@@ -76,7 +75,7 @@ function registrar(req, res) {
 
 //Actualizar categoria
 
-function actualizar(req, res) {
+const actualizar = (req, res, next) => {
 
     let id = req.params.id;
     let data = {
@@ -86,12 +85,7 @@ function actualizar(req, res) {
     
     Categoria.findByIdAndUpdate(id, data, {new: true}, (err, data)=>{
        
-        if(err){
-            return res.status(500).json({
-                ok: false,
-                err: err.message
-            })
-        }
+        if(err || !data) return errorHnadler(err, next, data);
 
         res.json({
             ok: true,
@@ -104,18 +98,13 @@ function actualizar(req, res) {
 
 //Borrar categoria
 
-function borrar(req, res) {
+const borrar = (req, res, next) =>{
 
     let id = req.params.id;
 
     Categoria.findByIdAndDelete(id,(err, data) =>{
 
-        if(err){
-            return res.status(500).json({
-                ok: false,
-                err: err.message
-            })
-        }
+        if(err || !data) return errorHnadler(err, next, data);
 
         res.json({
             ok: true,
@@ -124,7 +113,6 @@ function borrar(req, res) {
     })
    
 }
-
 
 
 module.exports = {
